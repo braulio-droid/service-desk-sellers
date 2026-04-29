@@ -267,10 +267,27 @@ function enviarPlanilha(){
     triage:triage
   };
   state.sheetStatus={ok:true,msg:'Enviando para planilha...'};render();
-  // Apps Script: no-cors + text/plain evita preflight; resposta nao e legivel mas request e disparado.
-  fetch(state.sheetWebhookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-    .then(function(){state.sheetStatus={ok:true,msg:'Envio disparado para a planilha. Verifique o Google Sheets.'};render();})
-    .catch(function(e){state.sheetStatus={ok:false,msg:'Erro ao enviar para a planilha: '+e.message};render();});
+  var bodyStr=JSON.stringify(payload);
+  // Tenta CORS primeiro (le resposta real). Se browser bloquear, cai para no-cors (opaque).
+  fetch(state.sheetWebhookUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:bodyStr,redirect:'follow'})
+    .then(function(r){return r.text().then(function(t){return{ok:r.ok,status:r.status,text:t};});})
+    .then(function(res){
+      if(res.ok){
+        // Apps Script normalmente responde {ok:true}; valida se for JSON
+        var parsed=null;try{parsed=JSON.parse(res.text);}catch(_){}
+        if(parsed&&parsed.ok===false){state.sheetStatus={ok:false,msg:'Erro do Apps Script: '+(parsed.error||res.text.slice(0,200))};}
+        else{state.sheetStatus={ok:true,msg:'Registro enviado para a planilha com sucesso.'};}
+      }else{
+        state.sheetStatus={ok:false,msg:'Erro HTTP '+res.status+' ao enviar: '+res.text.slice(0,200)};
+      }
+      render();
+    })
+    .catch(function(err){
+      // Fallback: CORS bloqueou. Dispara em no-cors (opaque) - request chega no Apps Script mas resposta nao e legivel.
+      fetch(state.sheetWebhookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:bodyStr})
+        .then(function(){state.sheetStatus={ok:true,msg:'Envio disparado para a planilha (modo no-cors). Confira no Google Sheets em alguns segundos. Se nada aparecer, verifique permissoes do Apps Script (Deploy > Anyone).'};render();})
+        .catch(function(err2){state.sheetStatus={ok:false,msg:'Erro ao enviar para a planilha: '+err2.message};render();});
+    });
 }
 function loadHash(){if(typeof window==='undefined')return;var h=window.location.hash||'';if(h.indexOf('#')===0)h=h.slice(1);if(!h)return;var P={};h.split('&').forEach(function(p){var i=p.indexOf('=');if(i>0){var k=p.slice(0,i),v=p.slice(i+1);try{P[k]=decodeURIComponent(v);}catch(e){P[k]=v;}}});if(P.n8n)state.n8nWebhookUrl=P.n8n;if(P.secret)state.n8nSecret=P.secret;if(P.sheet)state.sheetWebhookUrl=P.sheet;}
 function render(){var a=document.activeElement,fk=null,fid=null,cs=0,ce=0;if(a&&a.getAttribute){fk=a.getAttribute('data-form');fid=a.id||null;try{cs=a.selectionStart;ce=a.selectionEnd;}catch(e){}}$('#app').innerHTML=layout();var t=null;if(fk)t=$('[data-form="'+fk+'"]');else if(fid)t=document.getElementById(fid);if(t&&t.focus){try{t.focus();if(typeof t.setSelectionRange==='function'&&cs!=null)t.setSelectionRange(cs,ce);}catch(e){}}}
