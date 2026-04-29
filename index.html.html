@@ -154,10 +154,11 @@ var CARDS_INICIAIS=[
 {id:'SD-1045',cliente:'Nestle',solicitante:'Henrique Vidal',canal:'Email',sintoma:'erro_tecnico',area:'Engenharia',categoria:REGRAS.erro_tecnico.categoria,prioridade:'URGENT',status:'Em correcao',criadoEm:'2026-04-26',descricao:'Erro 500 ao exportar relatorio.',slaHoras:4,fato:'Erro 500 ao exportar relatorio.',causa:REGRAS.erro_tecnico.causa,acao:REGRAS.erro_tecnico.acao,modulo:'Relatorios',infos:[],pedidos:[],anexos:[]},
 {id:'SD-1046',cliente:'Vigor',solicitante:'Camila Rocha',canal:'HubSpot',sintoma:'melhoria_regra',area:'Engenharia',categoria:REGRAS.melhoria_regra.categoria,prioridade:'NORMAL',status:'Em triagem',criadoEm:'2026-04-27',descricao:'Novo indicador DOH.',slaHoras:72,fato:'Novo indicador DOH.',causa:REGRAS.melhoria_regra.causa,acao:REGRAS.melhoria_regra.acao,modulo:'BI DOH',infos:[],pedidos:[],anexos:[]}
 ];
-// Webhook da planilha viva (Vite injeta em build; fallback runtime)
-// Para configurar via Vite: VITE_TRIAGE_SHEET_WEBHOOK_URL
-// Para configurar runtime: aba "Integracao N8N" > "Webhook da planilha"
-var SHEET_WEBHOOK_URL_BUILD = (typeof window!=='undefined' && window.VITE_TRIAGE_SHEET_WEBHOOK_URL) ? window.VITE_TRIAGE_SHEET_WEBHOOK_URL : '';
+// Webhook da planilha viva (Sellers Service Desk - Triagens)
+// Prioridade: window.VITE_TRIAGE_SHEET_WEBHOOK_URL (build) > URL hardcoded (default Sellers) > config runtime na aba.
+// Para trocar a planilha: edite o default abaixo OU configure VITE_TRIAGE_SHEET_WEBHOOK_URL no Vercel.
+var SHEET_WEBHOOK_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycbwaz4Kq26mp6s9ZQcLzGPKraXx4_HDI5aO9ohL_6ges4IyFHg31yPoi2tyXu_TRYNBjQw/exec';
+var SHEET_WEBHOOK_URL_BUILD = (typeof window!=='undefined' && window.VITE_TRIAGE_SHEET_WEBHOOK_URL) ? window.VITE_TRIAGE_SHEET_WEBHOOK_URL : SHEET_WEBHOOK_URL_DEFAULT;
 var state={aba:'triagem',cards:CARDS_INICIAIS.slice(),sintoma:'',areaManual:'',impacto:'medio',urgencia:'media',abrangencia:'alguns',evidenciaArquivos:[],cardAbertoId:null,previewAberta:false,pedidoRetornoAberto:false,n8nWebhookUrl:'',n8nSecret:'',sheetWebhookUrl:SHEET_WEBHOOK_URL_BUILD,sheetStatus:null,aprovacaoConfirmada:false,envioStatus:null,filtroArea:'Todas',filtroPrioridade:'Todas',filtroStatus:'Todos',busca:'',form:{cliente:'',solicitante:'',canalEntrada:'',moduloTela:'',sintomaCustom:'',descricao:'',evidencia:'',semEvidenciaJustificativa:'',contextoDecisao:'',slaHoras:'',causaCustom:'',acaoCustom:'',emailContato:'',telefoneContato:''}};
 function $(s,c){return(c||document).querySelector(s);}
 function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));}
