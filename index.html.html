@@ -157,7 +157,7 @@ var CARDS_INICIAIS=[
 // Webhook da planilha viva (Sellers Service Desk - Triagens)
 // Prioridade: window.VITE_TRIAGE_SHEET_WEBHOOK_URL (build) > URL hardcoded (default Sellers) > config runtime na aba.
 // Para trocar a planilha: edite o default abaixo OU configure VITE_TRIAGE_SHEET_WEBHOOK_URL no Vercel.
-var SHEET_WEBHOOK_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycbwaz4Kq26mp6s9ZQcLzGPKraXx4_HDI5aO9ohL_6ges4IyFHg31yPoi2tyXu_TRYNBjQw/exec';
+var SHEET_WEBHOOK_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycbyFcfxKKZQrTVsjAbVZLxO1z9YrXyvpMneisogSrnogieI5s2LvemYYy80S5BSNYM7b8Q/exec';
 var SHEET_WEBHOOK_URL_BUILD = (typeof window!=='undefined' && window.VITE_TRIAGE_SHEET_WEBHOOK_URL) ? window.VITE_TRIAGE_SHEET_WEBHOOK_URL : SHEET_WEBHOOK_URL_DEFAULT;
 var state={aba:'triagem',cards:CARDS_INICIAIS.slice(),sintoma:'',areaManual:'',impacto:'medio',urgencia:'media',abrangencia:'alguns',evidenciaArquivos:[],cardAbertoId:null,previewAberta:false,pedidoRetornoAberto:false,n8nWebhookUrl:'',n8nSecret:'',sheetWebhookUrl:SHEET_WEBHOOK_URL_BUILD,sheetStatus:null,aprovacaoConfirmada:false,envioStatus:null,filtroArea:'Todas',filtroPrioridade:'Todas',filtroStatus:'Todos',busca:'',form:{cliente:'',solicitante:'',canalEntrada:'',moduloTela:'',sintomaCustom:'',descricao:'',evidencia:'',semEvidenciaJustificativa:'',contextoDecisao:'',slaHoras:'',causaCustom:'',acaoCustom:'',emailContato:'',telefoneContato:''}};
 function $(s,c){return(c||document).querySelector(s);}
